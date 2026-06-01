@@ -7,6 +7,65 @@ is_free: false
 order_index: 10
 icon: react
 skill_level: advanced
-github_repo_url: https://github.com/philomath-hq/memoization-basics
+github_repo_url: https://github.com/junior-to-mid-devs/memoization-basics
 github_classroom_url: https://classroom.github.com/a/memoization-basics
 ---
+
+## What you'll learn
+
+- What memoization is and why React needs it
+- When to use `React.memo`, `useMemo`, and `useCallback`
+- Why over-memoizing is its own kind of bug
+
+## How React decides to re-render
+
+By default, React re-renders a component whenever its parent re-renders — regardless of whether the props changed. For most components this is fine. For expensive components or large lists, you can opt out.
+
+## React.memo
+
+Wrap a component in `React.memo` to skip re-renders when props haven't changed (shallow comparison).
+
+```tsx
+const ExpensiveChart = React.memo(function ExpensiveChart({ data }: { data: number[] }) {
+  // expensive computation happens here
+  return <canvas />;
+});
+```
+
+Only use `React.memo` when you have measured a real performance problem. Memo has overhead too.
+
+## useMemo
+
+Cache the result of an expensive computation between renders.
+
+```tsx
+function ProductList({ products, filterText }: Props) {
+  const filtered = useMemo(
+    () => products.filter(p => p.name.toLowerCase().includes(filterText.toLowerCase())),
+    [products, filterText]
+  );
+
+  return <ul>{filtered.map(p => <li key={p.id}>{p.name}</li>)}</ul>;
+}
+```
+
+## useCallback
+
+Cache a function reference so it doesn't change on every render — useful when passing callbacks to memoized children.
+
+```tsx
+const handleDelete = useCallback((id: string) => {
+  setItems(items => items.filter(item => item.id !== id));
+}, []); // no deps — setItems from useState is stable
+```
+
+## The rule of thumb
+
+Measure first. Profile with React DevTools before adding any memoization. The wrong memo can make things slower by wasting memory on caches that never hit.
+
+## Key takeaways
+
+- `React.memo` — skip re-rendering a component when props haven't changed
+- `useMemo` — cache an expensive computed value
+- `useCallback` — cache a function reference for stable prop identity
+- Only memoize when you have evidence of a real performance problem

@@ -7,6 +7,52 @@ is_free: true
 order_index: 2
 icon: composition
 skill_level: beginner
-github_repo_url: https://github.com/philomath-hq/derived-state
+github_repo_url: https://github.com/junior-to-mid-devs/derived-state
 github_classroom_url: https://classroom.github.com/a/derived-state
 ---
+
+## What you'll learn
+
+- What derived state is and when to use it
+- How to avoid redundant `useState` calls
+- Common pitfalls with syncing state
+
+## What is derived state?
+
+Derived state is any value you can compute from existing state or props. If you can calculate it, don't store it.
+
+```tsx
+// ❌ Redundant — fullName is always name.first + name.last
+const [firstName, setFirstName] = useState('');
+const [lastName, setLastName] = useState('');
+const [fullName, setFullName] = useState(''); // <-- redundant
+
+// ✅ Derive it
+const [firstName, setFirstName] = useState('');
+const [lastName, setLastName] = useState('');
+const fullName = `${firstName} ${lastName}`; // derived, no state needed
+```
+
+## The classic mistake: syncing state with useEffect
+
+One of the most common over-engineering patterns is using `useEffect` to keep two pieces of state in sync.
+
+```tsx
+// ❌ Unnecessary effect
+useEffect(() => {
+  setFullName(`${firstName} ${lastName}`);
+}, [firstName, lastName]);
+
+// ✅ Just compute it during render
+const fullName = `${firstName} ${lastName}`;
+```
+
+## When state is genuinely separate
+
+Derived state only works when the output is deterministic from existing inputs. If the derived value needs its own independent lifecycle (e.g. it can be reset without resetting the source), it may deserve its own state.
+
+## Key takeaways
+
+- If a value can be computed from state or props, compute it — don't store it
+- Avoid `useEffect` just to sync two pieces of related state
+- Fewer state variables mean fewer bugs

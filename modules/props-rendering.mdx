@@ -7,6 +7,64 @@ is_free: true
 order_index: 1
 icon: react
 skill_level: beginner
-github_repo_url: https://github.com/philomath-hq/props-rendering
+github_repo_url: https://github.com/junior-to-mid-devs/props-rendering
 github_classroom_url: https://classroom.github.com/a/props-rendering
 ---
+
+## What you'll learn
+
+- How React passes data between components via props
+- The one-way data flow model and why it matters
+- How to compose UIs from small, reusable pieces
+
+## The mental model
+
+Think of a React component as a pure function. It receives inputs (props) and returns a description of the UI. The same props always produce the same output — no surprises.
+
+```tsx
+function Greeting({ name }: { name: string }) {
+  return <h1>Hello, {name}!</h1>;
+}
+```
+
+## Props are read-only
+
+A component should never mutate its own props. If you need to change something, lift the state up to the parent and pass a new value down.
+
+```tsx
+// ❌ Never mutate a prop
+function BadButton({ count }: { count: number }) {
+  count += 1;
+  return <button>{count}</button>;
+}
+
+// ✅ Let the parent own the state
+function GoodButton({ count, onClick }: { count: number; onClick: () => void }) {
+  return <button onClick={onClick}>{count}</button>;
+}
+```
+
+## Composing components
+
+Small, focused components combine to form complex UIs.
+
+```tsx
+function Avatar({ src, alt }: { src: string; alt: string }) {
+  return <img src={src} alt={alt} className="avatar" />;
+}
+
+function UserCard({ name, avatarSrc }: { name: string; avatarSrc: string }) {
+  return (
+    <div className="card">
+      <Avatar src={avatarSrc} alt={name} />
+      <span>{name}</span>
+    </div>
+  );
+}
+```
+
+## Key takeaways
+
+- Props flow down — events flow up
+- Components are just functions; props are their arguments
+- Keep components small and focused on a single responsibility

@@ -7,6 +7,86 @@ is_free: true
 order_index: 5
 icon: react
 skill_level: intermediate
-github_repo_url: https://github.com/philomath-hq/custom-hooks
+github_repo_url: https://github.com/junior-to-mid-devs/custom-hooks
 github_classroom_url: https://classroom.github.com/a/custom-hooks
 ---
+
+## What you'll learn
+
+- How to extract stateful logic into reusable custom hooks
+- The single-responsibility principle applied to hooks
+- How to test hooks in isolation
+
+## What is a custom hook?
+
+A custom hook is a function that starts with `use` and calls other hooks. It's how you share stateful logic between components without duplicating code.
+
+```tsx
+function useWindowWidth() {
+  const [width, setWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handler = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+
+  return width;
+}
+
+// Used in any component
+function Sidebar() {
+  const width = useWindowWidth();
+  return width < 768 ? <MobileSidebar /> : <DesktopSidebar />;
+}
+```
+
+## One hook, one concern
+
+Each hook should have exactly one behavioral concern. If the name contains "and", split it.
+
+```tsx
+// ❌ Too many concerns
+function useUserDashboard() {
+  const [user, setUser] = useState(null);
+  const [notifications, setNotifications] = useState([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  // ...
+}
+
+// ✅ Three focused hooks
+function useCurrentUser() { /* owns: authenticated user data */ }
+function useNotifications() { /* owns: notification feed */ }
+function useSidebar() { /* owns: sidebar open/close */ }
+```
+
+## A practical example: useFetch
+
+```tsx
+function useFetch<T>(url: string) {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true);
+
+    fetch(url, { signal: controller.signal })
+      .then(res => res.json())
+      .then(setData)
+      .catch(err => { if (err.name !== 'AbortError') setError(err); })
+      .finally(() => setLoading(false));
+
+    return () => controller.abort();
+  }, [url]);
+
+  return { data, loading, error };
+}
+```
+
+## Key takeaways
+
+- Custom hooks are just functions — start with `use`, call other hooks
+- One hook, one concern — name reflects that single concern
+- Hooks are the right place for stateful logic; components are for rendering

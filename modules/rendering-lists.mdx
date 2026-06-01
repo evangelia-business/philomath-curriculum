@@ -7,6 +7,73 @@ is_free: true
 order_index: 8
 icon: react
 skill_level: beginner
-github_repo_url: https://github.com/philomath-hq/rendering-lists
+github_repo_url: https://github.com/junior-to-mid-devs/rendering-lists
 github_classroom_url: https://classroom.github.com/a/rendering-lists
 ---
+
+## What you'll learn
+
+- How to render arrays of data in React
+- Why keys matter for reconciliation
+- Common pitfalls with list rendering
+
+## The basics: mapping over data
+
+```tsx
+const fruits = ['apple', 'banana', 'cherry'];
+
+function FruitList() {
+  return (
+    <ul>
+      {fruits.map(fruit => (
+        <li key={fruit}>{fruit}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+## Why keys matter
+
+React uses keys to identify which items changed, were added, or were removed. Without stable keys, React re-creates DOM nodes unnecessarily — causing flickering and lost input state.
+
+```tsx
+// ❌ Index as key — breaks when items are reordered or removed
+{items.map((item, index) => <Card key={index} item={item} />)}
+
+// ✅ Stable, unique identifier from the data
+{items.map(item => <Card key={item.id} item={item} />)}
+```
+
+## What happens with bad keys
+
+If you use array index as a key and then delete item #2 from a list of 5:
+- React sees that keys 0–3 now exist instead of 0–4
+- It reuses the DOM nodes in order, shifting data incorrectly
+- Any uncontrolled input inside the items (like a text field) retains the wrong value
+
+## Rendering with conditions
+
+```tsx
+function ProductList({ products }: { products: Product[] }) {
+  if (products.length === 0) {
+    return <p>No products found.</p>;
+  }
+
+  return (
+    <ul>
+      {products.map(product => (
+        <li key={product.id}>
+          <strong>{product.name}</strong> — {product.price}
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+## Key takeaways
+
+- Always provide a `key` prop when rendering lists
+- Keys must be stable and unique among siblings — use data IDs, not indices
+- Handle the empty state explicitly rather than rendering an empty list

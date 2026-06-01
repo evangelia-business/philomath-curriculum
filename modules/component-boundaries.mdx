@@ -7,6 +7,84 @@ is_free: false
 order_index: 7
 icon: composition
 skill_level: intermediate
-github_repo_url: https://github.com/philomath-hq/component-boundaries
+github_repo_url: https://github.com/junior-to-mid-devs/component-boundaries
 github_classroom_url: https://classroom.github.com/a/component-boundaries
 ---
+
+## What you'll learn
+
+- What error boundaries are and where to place them
+- How Suspense boundaries control loading states
+- How to choose the right boundary granularity
+
+## Error boundaries
+
+An error boundary is a class component that catches JavaScript errors in its child tree and renders a fallback UI instead of crashing the whole app.
+
+```tsx
+class ErrorBoundary extends React.Component<
+  { fallback: React.ReactNode; children: React.ReactNode },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) return this.props.fallback;
+    return this.props.children;
+  }
+}
+
+// Usage
+<ErrorBoundary fallback={<p>Something went wrong.</p>}>
+  <UserProfile userId={id} />
+</ErrorBoundary>
+```
+
+## Placing error boundaries
+
+Wrap sections of the UI independently so one failure doesn't take down the whole page.
+
+```tsx
+function Dashboard() {
+  return (
+    <div className="dashboard">
+      <ErrorBoundary fallback={<StatsError />}>
+        <StatsWidget />
+      </ErrorBoundary>
+      <ErrorBoundary fallback={<FeedError />}>
+        <ActivityFeed />
+      </ErrorBoundary>
+    </div>
+  );
+}
+```
+
+## Suspense boundaries
+
+Suspense lets you declaratively show a loading fallback while a child component is waiting for async data.
+
+```tsx
+<Suspense fallback={<Skeleton />}>
+  <UserProfile userId={id} />
+</Suspense>
+```
+
+Combining both:
+
+```tsx
+<ErrorBoundary fallback={<ProfileError />}>
+  <Suspense fallback={<ProfileSkeleton />}>
+    <UserProfile userId={id} />
+  </Suspense>
+</ErrorBoundary>
+```
+
+## Key takeaways
+
+- Error boundaries isolate failures — place them around independently-failable sections
+- Suspense boundaries control where loading states appear in the tree
+- Granularity matters: too broad and failures take down large areas; too fine and the UI is noisy

@@ -7,6 +7,92 @@ is_free: true
 order_index: 14
 icon: zap
 skill_level: intermediate
-github_repo_url: https://github.com/philomath-hq/async-javascript
+github_repo_url: https://github.com/junior-to-mid-devs/async-javascript
 github_classroom_url: https://classroom.github.com/a/async-javascript
 ---
+
+## What you'll learn
+
+- How the JavaScript event loop works
+- The difference between the macrotask and microtask queues
+- How Promises and async/await fit into the model
+
+## JavaScript is single-threaded
+
+JavaScript has one call stack. It runs one thing at a time. Async work is handled by offloading tasks to browser APIs (timers, network, I/O) and queuing callbacks when they complete.
+
+## The event loop
+
+```
+Call Stack → empty? → check Microtask Queue → drain it → check Macrotask Queue → run one task → repeat
+```
+
+- **Macrotasks:** `setTimeout`, `setInterval`, I/O callbacks, UI rendering
+- **Microtasks:** Promise callbacks (`.then`, `.catch`), `queueMicrotask`, `MutationObserver`
+
+Microtasks always run to completion before the next macrotask.
+
+```js
+console.log('1');
+
+setTimeout(() => console.log('2'), 0);
+
+Promise.resolve().then(() => console.log('3'));
+
+console.log('4');
+
+// Output: 1, 4, 3, 2
+```
+
+## Promises
+
+A Promise represents a value that will be available in the future.
+
+```js
+function fetchUser(id) {
+  return fetch(`/api/users/${id}`)
+    .then(res => {
+      if (!res.ok) throw new Error('Not found');
+      return res.json();
+    });
+}
+
+fetchUser(42)
+  .then(user => console.log(user.name))
+  .catch(err => console.error(err.message));
+```
+
+## async/await
+
+`async/await` is syntactic sugar over Promises. It makes async code read like synchronous code.
+
+```js
+async function loadUser(id) {
+  try {
+    const res = await fetch(`/api/users/${id}`);
+    if (!res.ok) throw new Error('Not found');
+    const user = await res.json();
+    return user;
+  } catch (err) {
+    console.error(err.message);
+    throw err;
+  }
+}
+```
+
+## Running promises in parallel
+
+```js
+// ❌ Sequential — waits for each one before starting the next
+const user = await fetchUser(id);
+const posts = await fetchPosts(id); // only starts after fetchUser completes
+
+// ✅ Parallel — both start immediately
+const [user, posts] = await Promise.all([fetchUser(id), fetchPosts(id)]);
+```
+
+## Key takeaways
+
+- Microtasks (Promises) run before the next macrotask (setTimeout)
+- async/await is just Promises with cleaner syntax — errors still need try/catch
+- Use `Promise.all` when you have independent async operations

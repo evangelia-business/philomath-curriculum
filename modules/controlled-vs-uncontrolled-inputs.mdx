@@ -7,6 +7,75 @@ is_free: true
 order_index: 11
 icon: composition
 skill_level: intermediate
-github_repo_url: https://github.com/philomath-hq/controlled-vs-uncontrolled-inputs
+github_repo_url: https://github.com/junior-to-mid-devs/controlled-vs-uncontrolled-inputs
 github_classroom_url: https://classroom.github.com/a/controlled-vs-uncontrolled-inputs
 ---
+
+## What you'll learn
+
+- The difference between controlled and uncontrolled inputs
+- Performance trade-offs of each approach
+- How to choose the right model for your use case
+
+## Controlled inputs
+
+React owns the value. Every keystroke fires a state update and re-render.
+
+```tsx
+function ControlledInput() {
+  const [value, setValue] = useState('');
+
+  return (
+    <input
+      value={value}
+      onChange={e => setValue(e.target.value)}
+      placeholder="Type here..."
+    />
+  );
+}
+```
+
+**Pros:** instant access to the current value; easy validation on every change; can drive other UI from the value.
+
+**Cons:** re-renders on every keystroke — can be costly in large forms.
+
+## Uncontrolled inputs
+
+The DOM owns the value. You read it only when you need it (usually on submit).
+
+```tsx
+function UncontrolledInput() {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleSubmit = () => {
+    console.log(inputRef.current?.value);
+  };
+
+  return (
+    <>
+      <input ref={inputRef} defaultValue="" placeholder="Type here..." />
+      <button onClick={handleSubmit}>Submit</button>
+    </>
+  );
+}
+```
+
+**Pros:** no re-renders while typing; simpler for read-on-submit forms.
+
+**Cons:** you can't easily drive other UI from the value while typing.
+
+## When to use which
+
+| Scenario | Recommended |
+|---|---|
+| Real-time validation | Controlled |
+| Derived UI from input value | Controlled |
+| Simple search or filter | Controlled |
+| Large form, read on submit | Uncontrolled |
+| Integrating with third-party inputs | Uncontrolled |
+
+## Key takeaways
+
+- Controlled = React owns the value, updates on every change
+- Uncontrolled = DOM owns the value, React reads it when needed
+- Start controlled; switch to uncontrolled only if re-render cost is measurable

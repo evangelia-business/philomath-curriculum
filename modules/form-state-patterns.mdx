@@ -7,6 +7,82 @@ is_free: false
 order_index: 6
 icon: composition
 skill_level: intermediate
-github_repo_url: https://github.com/philomath-hq/form-state-patterns
+github_repo_url: https://github.com/junior-to-mid-devs/form-state-patterns
 github_classroom_url: https://classroom.github.com/a/form-state-patterns
 ---
+
+## What you'll learn
+
+- Controlled vs uncontrolled forms and when to use each
+- How to model form state and validation
+- When to reach for a form library
+
+## Controlled forms
+
+In a controlled form, React owns the input value. Every keystroke updates state.
+
+```tsx
+function LoginForm() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    login({ email, password });
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input value={email} onChange={e => setEmail(e.target.value)} />
+      <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
+      <button type="submit">Login</button>
+    </form>
+  );
+}
+```
+
+## Validation state
+
+Keep errors as derived state when possible, or as a separate state object.
+
+```tsx
+const [values, setValues] = useState({ email: '', password: '' });
+const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+const errors = {
+  email: !values.email.includes('@') ? 'Invalid email' : null,
+  password: values.password.length < 8 ? 'Too short' : null,
+};
+
+const isValid = Object.values(errors).every(e => e === null);
+```
+
+## Uncontrolled forms with useRef
+
+For simple forms where you only need values on submit, `useRef` avoids unnecessary re-renders.
+
+```tsx
+function SearchForm({ onSearch }: { onSearch: (q: string) => void }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  return (
+    <form onSubmit={e => { e.preventDefault(); onSearch(inputRef.current!.value); }}>
+      <input ref={inputRef} placeholder="Search..." />
+      <button type="submit">Go</button>
+    </form>
+  );
+}
+```
+
+## When to use a form library
+
+Reach for React Hook Form or Zod + custom validation when:
+- You have many fields with complex interdependent validation
+- You need field-level dirty/touched tracking
+- You're integrating with a schema validation library
+
+## Key takeaways
+
+- Controlled forms give you full control at the cost of re-renders per keystroke
+- Uncontrolled forms with refs are simpler for read-on-submit use cases
+- Form libraries are worthwhile for complex multi-step or heavily validated forms
