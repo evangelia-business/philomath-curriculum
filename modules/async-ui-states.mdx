@@ -7,6 +7,72 @@ is_free: false
 order_index: 9
 icon: composition
 skill_level: intermediate
-github_repo_url: https://github.com/philomath-hq/async-ui-states
+github_repo_url: https://github.com/junior-to-mid-devs/async-ui-states
 github_classroom_url: https://classroom.github.com/a/async-ui-states
 ---
+
+## What you'll learn
+
+- How to model the four states of async data
+- How to render loading skeletons, errors, and empty states
+- How to build reusable async state patterns
+
+## The four states of async data
+
+Every async data fetch can be in one of four states: `idle`, `loading`, `success`, or `error`. Model all four explicitly.
+
+```tsx
+type AsyncState<T> =
+  | { status: 'idle' }
+  | { status: 'loading' }
+  | { status: 'success'; data: T }
+  | { status: 'error'; message: string };
+```
+
+## Rendering each state
+
+```tsx
+function UserProfile({ userId }: { userId: string }) {
+  const [state, setState] = useState<AsyncState<User>>({ status: 'idle' });
+
+  useEffect(() => {
+    setState({ status: 'loading' });
+    fetchUser(userId)
+      .then(data => setState({ status: 'success', data }))
+      .catch(err => setState({ status: 'error', message: err.message }));
+  }, [userId]);
+
+  if (state.status === 'idle' || state.status === 'loading') {
+    return <ProfileSkeleton />;
+  }
+  if (state.status === 'error') {
+    return <ErrorMessage message={state.message} />;
+  }
+  if (!state.data) {
+    return <EmptyState message="User not found" />;
+  }
+  return <ProfileCard user={state.data} />;
+}
+```
+
+## Skeleton screens vs spinners
+
+Skeletons are almost always better than spinners for content that has a known shape. They reduce perceived load time and prevent layout shift.
+
+```tsx
+function ProfileSkeleton() {
+  return (
+    <div className="skeleton-card">
+      <div className="skeleton skeleton-avatar" />
+      <div className="skeleton skeleton-title" />
+      <div className="skeleton skeleton-text" />
+    </div>
+  );
+}
+```
+
+## Key takeaways
+
+- Model async state as a discriminated union — never use separate `isLoading`/`isError` booleans
+- Handle all four states: idle, loading, error, and success
+- Prefer skeleton screens over spinners for known-shape content

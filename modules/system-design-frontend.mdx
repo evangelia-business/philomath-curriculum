@@ -7,6 +7,89 @@ is_free: false
 order_index: 18
 icon: git-merge
 skill_level: advanced
-github_repo_url: https://github.com/philomath-hq/system-design-frontend
+github_repo_url: https://github.com/junior-to-mid-devs/system-design-frontend
 github_classroom_url: https://classroom.github.com/a/system-design-frontend
 ---
+
+## What you'll learn
+
+- How to apply system design principles to frontend architecture
+- Caching strategies and trade-offs
+- Real-time data patterns and when to use them
+
+## Think in layers
+
+Frontend systems have distinct layers with different constraints:
+
+```
+Browser Cache / Service Worker
+    ↓
+CDN (static assets, edge caching)
+    ↓
+API Gateway / BFF (Backend for Frontend)
+    ↓
+Origin (database, microservices)
+```
+
+Design decisions at each layer have cascading effects. Understand which layer a problem belongs to before choosing a solution.
+
+## Caching strategies
+
+| Strategy | When to use |
+|---|---|
+| Cache-first | Static assets — CSS, JS bundles, fonts |
+| Network-first | Dynamic content where freshness matters |
+| Stale-while-revalidate | Data that can be slightly stale — dashboards, feeds |
+| Cache-only | Offline mode |
+
+```ts
+// Stale-while-revalidate with React Query
+const { data } = useQuery({
+  queryKey: ['user', userId],
+  queryFn: () => fetchUser(userId),
+  staleTime: 60_000,      // treat as fresh for 60s
+  gcTime: 5 * 60_000,     // keep in cache for 5 min
+});
+```
+
+## Real-time data patterns
+
+| Pattern | Latency | Server load | Use case |
+|---|---|---|---|
+| Polling | Medium | High | Simple dashboards |
+| Long polling | Low | Medium | Chat (legacy) |
+| WebSockets | Very low | Low per connection | Live collaboration |
+| SSE | Low | Low per connection | Notifications, feeds |
+
+```ts
+// Server-Sent Events — one-way server→client stream
+const es = new EventSource('/api/notifications');
+es.onmessage = (e) => setNotifications(n => [JSON.parse(e.data), ...n]);
+// cleanup
+return () => es.close();
+```
+
+## API design: BFF pattern
+
+A Backend for Frontend is a thin server layer owned by the frontend team. It aggregates calls to multiple microservices and returns exactly the shape the UI needs — no over-fetching, no under-fetching.
+
+```
+UI → BFF → UserService
+         → OrderService
+         → InventoryService
+```
+
+The BFF also handles auth token exchange, response caching, and error normalisation — concerns that shouldn't live in client-side JavaScript.
+
+## Micro-frontends
+
+Micro-frontends split a large SPA into independently deployable pieces, each owned by a separate team. They solve org-scale problems, not technical ones. Don't reach for them until you have:
+- Multiple teams stepping on each other's deployments
+- Parts of the app that need different tech stacks or release cadences
+
+## Key takeaways
+
+- Match caching strategy to data freshness requirements — not everything needs network-first
+- Use SSE for server-push notifications; WebSockets for bidirectional real-time features
+- The BFF pattern keeps the UI decoupled from microservice complexity
+- Micro-frontends solve team-scale problems; don't adopt them for technical reasons alone

@@ -7,6 +7,70 @@ is_free: true
 order_index: 3
 icon: composition
 skill_level: beginner
-github_repo_url: https://github.com/philomath-hq/state-colocation
+github_repo_url: https://github.com/junior-to-mid-devs/state-colocation
 github_classroom_url: https://classroom.github.com/a/state-colocation
 ---
+
+## What you'll learn
+
+- The principle of colocating state with the components that use it
+- How over-lifting state causes performance problems
+- When to lift state and when to keep it local
+
+## The colocation principle
+
+State should live as close to where it's used as possible. Don't lift state higher than necessary just because it feels tidy.
+
+```tsx
+// ❌ Parent owns state it doesn't use
+function Parent() {
+  const [isOpen, setIsOpen] = useState(false);
+  return <Dropdown isOpen={isOpen} onToggle={() => setIsOpen(o => !o)} />;
+}
+
+// ✅ Dropdown owns its own open/close state
+function Dropdown() {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div>
+      <button onClick={() => setIsOpen(o => !o)}>Toggle</button>
+      {isOpen && <ul>...</ul>}
+    </div>
+  );
+}
+```
+
+## The cost of over-lifting
+
+When state lives too high in the tree, every state update re-renders the entire subtree — even components that don't care about the change.
+
+```tsx
+// ❌ Changing searchQuery re-renders Header, Sidebar, and Footer unnecessarily
+function App() {
+  const [searchQuery, setSearchQuery] = useState('');
+  return (
+    <>
+      <Header />
+      <Sidebar />
+      <SearchBar query={searchQuery} onChange={setSearchQuery} />
+      <Footer />
+    </>
+  );
+}
+
+// ✅ State lives where it's used
+function SearchSection() {
+  const [searchQuery, setSearchQuery] = useState('');
+  return <SearchBar query={searchQuery} onChange={setSearchQuery} />;
+}
+```
+
+## When to lift state
+
+Lift state only when two or more sibling components genuinely need to share it. Even then, consider whether the shared state belongs in a hook instead of a parent component.
+
+## Key takeaways
+
+- Start with state as low as it can go; only lift when you have to
+- Over-lifting causes unnecessary re-renders across unrelated components
+- Colocated state is easier to delete, refactor, and reason about

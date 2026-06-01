@@ -7,6 +7,78 @@ is_free: false
 order_index: 15
 icon: box
 skill_level: intermediate
-github_repo_url: https://github.com/philomath-hq/component-architecture
+github_repo_url: https://github.com/junior-to-mid-devs/component-architecture
 github_classroom_url: https://classroom.github.com/a/component-architecture
 ---
+
+## What you'll learn
+
+- Atomic Design and how to organise components
+- Presentational vs container components
+- How to design robust props contracts
+
+## Atomic Design
+
+Atomic Design gives components a vocabulary for composition:
+
+- **Atoms** — smallest building blocks: `Button`, `Input`, `Badge`
+- **Molecules** — groups of atoms: `SearchBar` (Input + Button), `FormField` (Label + Input + Error)
+- **Organisms** — complex sections: `NavigationHeader`, `ProductCard`, `UserProfile`
+- **Templates** — page-level layouts with placeholder content
+- **Pages** — instances of templates with real data
+
+## Presentational vs container components
+
+**Presentational** components only care about how things look. They receive everything via props.
+
+```tsx
+// Pure presentational — no data fetching, no state beyond UI concerns
+function ProductCard({ name, price, imageUrl, onAddToCart }: ProductCardProps) {
+  return (
+    <div className="card">
+      <img src={imageUrl} alt={name} />
+      <h3>{name}</h3>
+      <span>{price}</span>
+      <button onClick={onAddToCart}>Add to cart</button>
+    </div>
+  );
+}
+```
+
+**Container** components fetch data and pass it down.
+
+```tsx
+function ProductCardContainer({ productId }: { productId: string }) {
+  const { data: product, loading } = useProduct(productId);
+  const { addToCart } = useCart();
+
+  if (loading) return <ProductSkeleton />;
+  if (!product) return null;
+
+  return <ProductCard {...product} onAddToCart={() => addToCart(product.id)} />;
+}
+```
+
+## Designing a good props contract
+
+- Accept the minimum needed — don't pass whole objects when you only need one field
+- Use explicit named props over generic `data` objects
+- Callback props start with `on`: `onClick`, `onSubmit`, `onChange`
+
+```tsx
+// ❌ Too broad — forces callers to know the full User shape
+function Avatar({ user }: { user: User }) {
+  return <img src={user.avatarUrl} alt={user.displayName} />;
+}
+
+// ✅ Only what's needed — easier to mock, test, and reuse
+function Avatar({ src, alt }: { src: string; alt: string }) {
+  return <img src={src} alt={alt} />;
+}
+```
+
+## Key takeaways
+
+- Atoms are reusable everywhere; organisms are specific to a domain
+- Presentational components are easy to test and reuse — keep them pure
+- Design props contracts around what the component needs, not what the caller has

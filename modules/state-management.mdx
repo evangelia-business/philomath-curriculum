@@ -7,6 +7,92 @@ is_free: false
 order_index: 16
 icon: database
 skill_level: intermediate
-github_repo_url: https://github.com/philomath-hq/state-management
+github_repo_url: https://github.com/junior-to-mid-devs/state-management
 github_classroom_url: https://classroom.github.com/a/state-management
 ---
+
+## What you'll learn
+
+- The state management spectrum: local → lifted → context → global store
+- When each tool is appropriate
+- How to avoid over-engineering state
+
+## The spectrum
+
+```
+useState → lifted useState → useContext → Zustand / Jotai / Redux
+```
+
+Start at the left. Move right only when you hit a genuine problem.
+
+## Local state
+
+The right default for isolated UI state.
+
+```tsx
+function Counter() {
+  const [count, setCount] = useState(0);
+  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+}
+```
+
+## Lifted state
+
+When two sibling components need the same piece of state, lift it to their closest common ancestor.
+
+```tsx
+function FilterableList() {
+  const [filter, setFilter] = useState('');
+  return (
+    <>
+      <FilterInput value={filter} onChange={setFilter} />
+      <ItemList filter={filter} />
+    </>
+  );
+}
+```
+
+## Context
+
+Context solves the prop-drilling problem — passing data through many intermediate components that don't use it. Good for: theme, locale, auth session, feature flags.
+
+```tsx
+const ThemeContext = createContext<'dark' | 'light'>('dark');
+
+function App() {
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  return (
+    <ThemeContext.Provider value={theme}>
+      <Layout />
+    </ThemeContext.Provider>
+  );
+}
+
+function DeepButton() {
+  const theme = useContext(ThemeContext);
+  return <button className={theme}>Click</button>;
+}
+```
+
+Context is not a performance tool. Every consumer re-renders when the context value changes.
+
+## Global stores (Zustand)
+
+Reach for a global store when:
+- Many unrelated components need the same state
+- State updates need to happen outside React (from a websocket, for example)
+- You need fine-grained subscriptions to avoid re-renders
+
+```tsx
+const useCartStore = create<CartStore>((set) => ({
+  items: [],
+  addItem: (item) => set(state => ({ items: [...state.items, item] })),
+  removeItem: (id) => set(state => ({ items: state.items.filter(i => i.id !== id) })),
+}));
+```
+
+## Key takeaways
+
+- Start local; lift only when siblings need to share state
+- Context is for ambient data (theme, auth) — not for high-frequency updates
+- Reach for a global store when context causes too many re-renders or state lives outside React

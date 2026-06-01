@@ -7,6 +7,79 @@ is_free: false
 order_index: 12
 icon: react
 skill_level: advanced
-github_repo_url: https://github.com/philomath-hq/server-and-client-components
+github_repo_url: https://github.com/junior-to-mid-devs/server-and-client-components
 github_classroom_url: https://classroom.github.com/a/server-and-client-components
 ---
+
+## What you'll learn
+
+- What React Server Components are and why they exist
+- How Next.js App Router decides what runs where
+- How to draw the client boundary correctly
+
+## Server Components by default
+
+In the Next.js App Router, every component is a Server Component by default. They run only on the server — no JavaScript is sent to the browser for them.
+
+```tsx
+// app/page.tsx — Server Component (no directive needed)
+async function HomePage() {
+  const posts = await fetchPosts(); // direct DB/API access, no fetch overhead
+  return <PostList posts={posts} />;
+}
+```
+
+Benefits: zero JS bundle cost, direct data access, no hydration.
+
+## Client Components
+
+Add `'use client'` only when the component needs browser APIs, event handlers, or React hooks like `useState` and `useEffect`.
+
+```tsx
+'use client';
+
+function LikeButton({ postId }: { postId: string }) {
+  const [liked, setLiked] = useState(false);
+
+  return (
+    <button onClick={() => setLiked(l => !l)}>
+      {liked ? '❤️' : '🤍'}
+    </button>
+  );
+}
+```
+
+## Push the boundary down
+
+The client boundary should be as narrow as possible. Keep the page and layout as Server Components, and push `'use client'` to the smallest interactive leaf.
+
+```tsx
+// ❌ Entire page becomes a client component
+'use client';
+async function ProductPage() { ... }
+
+// ✅ Only the interactive part is a client component
+// ProductPage.tsx (Server Component)
+async function ProductPage({ params }: { params: { id: string } }) {
+  const product = await fetchProduct(params.id);
+  return (
+    <div>
+      <ProductDetails product={product} />  {/* Server */}
+      <AddToCartButton productId={product.id} />  {/* Client */}
+    </div>
+  );
+}
+```
+
+## What can't be done in Server Components
+
+- `useState`, `useEffect`, and all other hooks
+- Event handlers (`onClick`, `onChange`, etc.)
+- Browser APIs (`window`, `document`, `localStorage`)
+- Context consumers (context itself is client-only)
+
+## Key takeaways
+
+- Server Components are the default — they run only on the server
+- Add `'use client'` only for interactivity, hooks, or browser APIs
+- Place the client boundary at the smallest interactive leaf, not the page

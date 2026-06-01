@@ -7,6 +7,85 @@ is_free: false
 order_index: 17
 icon: trending-up
 skill_level: advanced
-github_repo_url: https://github.com/philomath-hq/performance-patterns
+github_repo_url: https://github.com/junior-to-mid-devs/performance-patterns
 github_classroom_url: https://classroom.github.com/a/performance-patterns
 ---
+
+## What you'll learn
+
+- How to profile React rendering with DevTools
+- Techniques to reduce bundle size and improve load time
+- Core Web Vitals and what affects each one
+
+## Profiling first
+
+Never optimise without measuring. Open React DevTools Profiler, record a slow interaction, and find the components that take the most time to render.
+
+## Reducing unnecessary renders
+
+Common causes of excessive re-renders:
+- Inline object/array/function props that create new references every render
+- Context values that are recreated every render
+- Missing `React.memo` on expensive child components
+
+```tsx
+// ❌ New object reference on every parent render
+<Chart config={{ color: 'blue', size: 200 }} />
+
+// ✅ Stable reference
+const chartConfig = useMemo(() => ({ color: 'blue', size: 200 }), []);
+<Chart config={chartConfig} />
+```
+
+## Code splitting and lazy loading
+
+Split your bundle so users only download what they need.
+
+```tsx
+import { lazy, Suspense } from 'react';
+
+const HeavyChart = lazy(() => import('./HeavyChart'));
+
+function Dashboard() {
+  return (
+    <Suspense fallback={<ChartSkeleton />}>
+      <HeavyChart />
+    </Suspense>
+  );
+}
+```
+
+## Image optimisation
+
+- Use `next/image` in Next.js projects — it handles lazy loading, format conversion, and responsive sizes automatically
+- Specify `width` and `height` to prevent layout shift (affects CLS)
+
+## Core Web Vitals
+
+| Metric | What it measures | Key fix |
+|---|---|---|
+| LCP | Largest Contentful Paint — load speed | Preload hero images, reduce server response time |
+| CLS | Cumulative Layout Shift — visual stability | Reserve space for images and ads |
+| INP | Interaction to Next Paint — responsiveness | Break up long tasks, defer non-critical JS |
+
+## Virtual lists
+
+For lists of 100+ items, render only what's visible.
+
+```tsx
+import { FixedSizeList } from 'react-window';
+
+function BigList({ items }: { items: string[] }) {
+  return (
+    <FixedSizeList height={600} itemCount={items.length} itemSize={48} width="100%">
+      {({ index, style }) => <div style={style}>{items[index]}</div>}
+    </FixedSizeList>
+  );
+}
+```
+
+## Key takeaways
+
+- Measure before optimising — use React DevTools Profiler and Lighthouse
+- Lazy-load heavy components and routes; avoid shipping unused code
+- Target LCP, CLS, and INP — the Core Web Vitals that affect real user experience
