@@ -9,6 +9,39 @@ icon: react
 skill_level: beginner
 github_repo_url: https://github.com/junior-to-mid-devs/live-data-fetching-playground
 github_classroom_url: https://classroom.github.com/a/rendering-lists
+questions:
+  - id: q1
+    question: "Each row has an uncontrolled text input. The user types in some rows, then deletes the second row. What can go wrong?"
+    code:
+      language: tsx
+      source: |
+        {items.map((item, index) => (
+          <li key={index}>
+            {item.name} <input defaultValue="" />
+          </li>
+        ))}
+    options:
+      - { id: a, text: "React throws an error about duplicate keys" }
+      - { id: b, text: "Nothing, index keys are fine for any list" }
+      - { id: c, text: "The typed values stay in place while the names shift, so inputs show text for the wrong rows" }
+    correct_option: c
+    explanation: "With index keys, React reuses DOM nodes by position. The inputs keep their old values, but the data moves up by one."
+  - id: q2
+    question: "Items come from an API and each one has an id. What should the key be?"
+    options:
+      - { id: a, text: "The array index" }
+      - { id: b, text: "The item id" }
+      - { id: c, text: "Math.random(), so every key is unique" }
+    correct_option: b
+    explanation: "Keys must be stable and unique among siblings. A random key changes every render, so React remounts every item."
+  - id: q3
+    question: "`products` is an empty array. What is the best thing to render?"
+    options:
+      - { id: a, text: "A clear message like No products found" }
+      - { id: b, text: "An empty ul element" }
+      - { id: c, text: "A loading spinner" }
+    correct_option: a
+    explanation: "Handle the empty state on purpose. An empty list looks like a bug, and a spinner suggests data is still coming."
 ---
 
 ## What you'll learn

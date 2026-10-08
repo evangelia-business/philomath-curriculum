@@ -12,6 +12,38 @@ github_classroom_url: https://classroom.github.com/a/component-architecture
 paths:
   - slug: senior-principal-engineer
     position: 1
+questions:
+  - id: q1
+    question: "How should you improve the props of this `Avatar` component?"
+    code:
+      language: tsx
+      source: |
+        function Avatar({ user }: { user: User }) {
+          return <img src={user.avatarUrl} alt={user.displayName} />;
+        }
+    options:
+      - { id: a, text: "Make user optional so callers can skip it" }
+      - { id: b, text: "Accept only src and alt, the two values it really uses" }
+      - { id: c, text: "Add more fields from User in case they are needed later" }
+    correct_option: b
+    explanation: "Design props around what the component needs, not what the caller has. A small contract is easier to reuse, mock and test."
+  - id: q2
+    question: "`ProductCard` fetches its own data with `useProduct`. You want to show it in Storybook with fake data. What helps most?"
+    options:
+      - { id: a, text: "Mock fetch globally in every story" }
+      - { id: b, text: "Add a loading prop to ProductCard" }
+      - { id: c, text: "Copy the component into a story-only version" }
+      - { id: d, text: "Split it into a presentational ProductCard that takes props and a container that fetches the data" }
+    correct_option: d
+    explanation: "A presentational component gets everything through props, so a story can pass any data with no network."
+  - id: q3
+    question: "Which component should be the easiest to reuse in a different part of the product?"
+    options:
+      - { id: a, text: "An atom like Button" }
+      - { id: b, text: "An organism like UserProfile" }
+      - { id: c, text: "A page with real data" }
+    correct_option: a
+    explanation: "Atoms have no domain knowledge. Organisms and pages are tied to a specific domain and context."
 ---
 
 ## What you'll learn

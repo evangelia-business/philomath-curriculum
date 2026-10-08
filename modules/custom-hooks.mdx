@@ -12,6 +12,42 @@ github_classroom_url: https://classroom.github.com/a/custom-hooks
 paths:
   - slug: senior-principal-engineer
     position: 5
+questions:
+  - id: q1
+    question: "A teammate wrote `useUserAndCart()`. It loads the current user and also manages the shopping cart. What is the best change?"
+    options:
+      - { id: a, text: "Keep it as it is, because one hook means fewer imports" }
+      - { id: b, text: "Wrap the hook body in useMemo so it runs less often" }
+      - { id: c, text: "Split it into useCurrentUser and useCart, one concern each" }
+      - { id: d, text: "Move the logic back into the component that uses it" }
+    correct_option: c
+    explanation: "A hook name with \"and\" in it is a sign of two concerns. Two focused hooks can change, be tested and be reused on their own."
+  - id: q2
+    question: "Why does this `useFetch` hook return a cleanup that calls `controller.abort()`?"
+    code:
+      language: tsx
+      source: |
+        useEffect(() => {
+          const controller = new AbortController();
+          fetch(url, { signal: controller.signal })
+            .then(res => res.json())
+            .then(setData);
+          return () => controller.abort();
+        }, [url]);
+    options:
+      - { id: a, text: "To cancel the old request when the url changes or the component unmounts, so a late response cannot set stale data" }
+      - { id: b, text: "To clear the cached data every time the component re-renders" }
+      - { id: c, text: "To make the next request start faster" }
+    correct_option: a
+    explanation: "The cleanup runs before the effect runs again and on unmount. Aborting there stops an old response from overwriting newer data."
+  - id: q3
+    question: "Two components both call `useWindowWidth()`. What do they share?"
+    options:
+      - { id: a, text: "One shared state value, so an update in one component updates the other" }
+      - { id: b, text: "Only the logic. Each component that calls the hook gets its own state and its own listener" }
+      - { id: c, text: "Nothing, because a custom hook can only be used in one component" }
+    correct_option: b
+    explanation: "A custom hook shares stateful logic, not state. Each call has its own state, just like calling `useState` twice."
 ---
 
 ## What you'll learn

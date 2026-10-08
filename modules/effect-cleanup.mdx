@@ -12,6 +12,41 @@ github_classroom_url: https://classroom.github.com/a/effect-cleanup
 paths:
   - slug: senior-principal-engineer
     position: 4
+questions:
+  - id: q1
+    question: "What goes wrong with this effect when the component unmounts?"
+    code:
+      language: tsx
+      source: |
+        useEffect(() => {
+          const id = setInterval(() => {
+            setTick(t => t + 1);
+          }, 1000);
+        }, []);
+    options:
+      - { id: a, text: "Nothing, React stops all intervals of a component when it unmounts" }
+      - { id: b, text: "The interval runs twice as fast after unmount" }
+      - { id: c, text: "The interval keeps running and keeps calling setTick after the component is gone" }
+    correct_option: c
+    explanation: "React does not know about the interval. Return `() => clearInterval(id)` from the effect to stop it."
+  - id: q2
+    question: "An effect depends on `[userId]`. The userId changes from 1 to 2. What does React do?"
+    options:
+      - { id: a, text: "It runs the cleanup for userId 1, then runs the effect for userId 2" }
+      - { id: b, text: "It runs the effect for userId 2, and the cleanup for userId 1 only runs on unmount" }
+      - { id: c, text: "It runs the effect for userId 2 first, then the cleanup for userId 1" }
+      - { id: d, text: "It does nothing until the component unmounts" }
+    correct_option: a
+    explanation: "The cleanup runs before the effect runs again and on unmount. This is how each run cleans up after itself."
+  - id: q3
+    question: "A user switches fast from user 1 to user 2. The response for user 1 arrives last and shows the wrong profile. What is the best fix?"
+    options:
+      - { id: a, text: "Remove userId from the dependency array" }
+      - { id: b, text: "Wait a short time with setTimeout before calling setUser" }
+      - { id: c, text: "Store each user in a separate useState call" }
+      - { id: d, text: "Set a cancelled flag or call abort on an AbortController in the cleanup, and ignore the old response" }
+    correct_option: d
+    explanation: "The cleanup for user 1 runs before the effect for user 2. Cancelling there means the late response for user 1 is ignored."
 ---
 
 ## What you'll learn

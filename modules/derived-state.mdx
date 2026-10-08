@@ -12,6 +12,42 @@ github_classroom_url: https://classroom.github.com/a/derived-state
 paths:
   - slug: mid-engineer
     position: 3
+questions:
+  - id: q1
+    question: "What is the best change to this code?"
+    code:
+      language: tsx
+      source: |
+        const [firstName, setFirstName] = useState('');
+        const [lastName, setLastName] = useState('');
+        const [fullName, setFullName] = useState('');
+
+        useEffect(() => {
+          setFullName(`${firstName} ${lastName}`);
+        }, [firstName, lastName]);
+    options:
+      - { id: a, text: "Use useLayoutEffect so the sync runs sooner" }
+      - { id: b, text: "Add fullName to the dependency array" }
+      - { id: c, text: "Remove the fullName state and the effect, and compute fullName during render" }
+    correct_option: c
+    explanation: "fullName can always be computed from the other two values. Storing it adds an extra render and a chance to get out of sync."
+  - id: q2
+    question: "A list shows `items` filtered by `filterText`. Should you store `filteredItems` in state?"
+    options:
+      - { id: a, text: "No, compute it from items and filterText during render, and add useMemo only if it is measured as slow" }
+      - { id: b, text: "Yes, so it is not computed again on every render" }
+      - { id: c, text: "Yes, and update it in a useEffect when items change" }
+    correct_option: a
+    explanation: "A filtered list is derived from state you already have. Computing it keeps one source of truth."
+  - id: q3
+    question: "When does a value that looks derived deserve its own state?"
+    options:
+      - { id: a, text: "When it is a string" }
+      - { id: b, text: "When it is used in more than one place" }
+      - { id: c, text: "When the computation has more than one line" }
+      - { id: d, text: "When it must be edited or reset on its own, apart from its source" }
+    correct_option: d
+    explanation: "If the value has its own lifecycle, it is not purely derived. Otherwise, compute it."
 ---
 
 ## What you'll learn

@@ -9,6 +9,41 @@ icon: composition
 skill_level: intermediate
 github_repo_url: https://github.com/junior-to-mid-devs/live-data-fetching-playground
 github_classroom_url: https://classroom.github.com/a/form-state-patterns
+questions:
+  - id: q1
+    question: "Why are `errors` computed here instead of being stored with `useState`?"
+    code:
+      language: tsx
+      source: |
+        const [values, setValues] = useState({ email: '', password: '' });
+
+        const errors = {
+          email: !values.email.includes('@') ? 'Invalid email' : null,
+          password: values.password.length < 8 ? 'Too short' : null,
+        };
+    options:
+      - { id: a, text: "Because useState cannot hold objects" }
+      - { id: b, text: "Because errors are derived from values, so they can never be out of sync" }
+      - { id: c, text: "Because it makes the form re-render less" }
+    correct_option: b
+    explanation: "Errors depend only on the values. Computing them during render keeps one source of truth."
+  - id: q2
+    question: "A search form only needs its value when the user presses Go. What is the simplest approach?"
+    options:
+      - { id: a, text: "An uncontrolled input with a ref, read on submit" }
+      - { id: b, text: "A form library with a schema" }
+      - { id: c, text: "A controlled input plus a useEffect that saves the value" }
+    correct_option: a
+    explanation: "When you only need the value on submit, a ref avoids a re-render on every keystroke."
+  - id: q3
+    question: "A signup flow has 3 steps, 20 fields, rules that depend on other fields, and touched tracking. What is the best choice?"
+    options:
+      - { id: a, text: "One useState per field, with validation inside each onChange" }
+      - { id: b, text: "Uncontrolled inputs, read with refs on the last step" }
+      - { id: c, text: "Keep all values in the URL" }
+      - { id: d, text: "A form library such as React Hook Form, with a schema like Zod" }
+    correct_option: d
+    explanation: "Many fields, linked rules and dirty or touched tracking are exactly what form libraries solve well."
 ---
 
 ## What you'll learn

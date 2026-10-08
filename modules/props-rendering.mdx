@@ -12,6 +12,38 @@ github_classroom_url: https://classroom.github.com/a/props-rendering
 paths:
   - slug: mid-engineer
     position: 2
+questions:
+  - id: q1
+    question: "What is wrong with this component?"
+    code:
+      language: tsx
+      source: |
+        function CounterButton({ count }: { count: number }) {
+          count += 1;
+          return <button>{count}</button>;
+        }
+    options:
+      - { id: a, text: "Nothing, count is a local variable" }
+      - { id: b, text: "The button needs a key prop" }
+      - { id: c, text: "It changes a prop. The parent should own the count and pass an onClick callback" }
+    correct_option: c
+    explanation: "Props are read-only. Changing them breaks one-way data flow, and the change is lost on the next render."
+  - id: q2
+    question: "A child component needs to tell its parent that the user clicked. How should it do this?"
+    options:
+      - { id: a, text: "The parent passes a callback prop such as onClick, and the child calls it" }
+      - { id: b, text: "The child changes the props it received" }
+      - { id: c, text: "The child reads and writes the parent state directly" }
+    correct_option: a
+    explanation: "Data flows down as props and events flow up as callbacks."
+  - id: q3
+    question: "Why pull an `Avatar` out of `UserCard` into its own component?"
+    options:
+      - { id: a, text: "Small components always render faster" }
+      - { id: b, text: "React needs every img in its own component" }
+      - { id: c, text: "It has one job, so it can be reused in other places and changed on its own" }
+    correct_option: c
+    explanation: "Small, focused components combine into larger UIs and are easier to reuse and test."
 ---
 
 ## What you'll learn

@@ -9,6 +9,38 @@ icon: react
 skill_level: advanced
 github_repo_url: https://github.com/junior-to-mid-devs/live-data-fetching-playground
 github_classroom_url: https://classroom.github.com/a/memoization-basics
+questions:
+  - id: q1
+    question: "Why is the empty dependency array safe in this `useCallback`?"
+    code:
+      language: tsx
+      source: |
+        const handleDelete = useCallback((id: string) => {
+          setItems(items => items.filter(item => item.id !== id));
+        }, []);
+    options:
+      - { id: a, text: "It uses the updater form, and setItems is stable, so it never reads stale items" }
+      - { id: b, text: "useCallback ignores the dependency array" }
+      - { id: c, text: "Empty arrays are always safe for callbacks" }
+    correct_option: a
+    explanation: "The updater gets the latest items as its argument, so the callback does not need items in its closure."
+  - id: q2
+    question: "`Row` is wrapped in `React.memo`. The parent passes `onDelete={() => remove(id)}` inline. Does memo help?"
+    options:
+      - { id: a, text: "Yes, memo skips the render because the function body is the same" }
+      - { id: b, text: "No, the inline function is a new reference on every render, so the props always differ" }
+      - { id: c, text: "Yes, memo does not compare functions" }
+    correct_option: b
+    explanation: "Memo compares props by reference. Use useCallback for the handler if the memo is worth keeping."
+  - id: q3
+    question: "A teammate wraps every component in `React.memo` just in case. What is the risk?"
+    options:
+      - { id: a, text: "React throws an error when memo is nested" }
+      - { id: b, text: "Components stop updating when state changes" }
+      - { id: c, text: "Memo is removed in production builds" }
+      - { id: d, text: "Extra compare and memory cost with no measured gain, which can make things slower" }
+    correct_option: d
+    explanation: "Memo has its own cost. Measure first, then memoize where the profiler shows a real problem."
 ---
 
 ## What you'll learn
