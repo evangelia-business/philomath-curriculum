@@ -30,6 +30,7 @@ Full MDX lesson content goes here…
 | derived-state | derived-state.mdx |
 | effect-cleanup | effect-cleanup.mdx |
 | form-state-patterns | form-state-patterns.mdx |
+| mcp-tools-vs-manual-bash | mcp-tools-vs-manual-bash.mdx |
 | memoization-basics | memoization-basics.mdx |
 | performance-patterns | performance-patterns.mdx |
 | props-rendering | props-rendering.mdx |
