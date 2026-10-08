@@ -12,6 +12,39 @@ github_classroom_url: https://classroom.github.com/a/async-javascript
 paths:
   - slug: mid-engineer
     position: 5
+questions:
+  - id: q1
+    question: "What does this code print?"
+    code:
+      language: js
+      source: |
+        console.log('A');
+        setTimeout(() => console.log('B'), 0);
+        Promise.resolve().then(() => console.log('C'));
+        console.log('D');
+    options:
+      - { id: a, text: "A, B, C, D" }
+      - { id: b, text: "A, C, D, B" }
+      - { id: c, text: "A, D, B, C" }
+      - { id: d, text: "A, D, C, B" }
+    correct_option: d
+    explanation: "Sync code runs first. Then all microtasks (the promise) run before the next macrotask (the timeout)."
+  - id: q2
+    question: "You need a user and their posts. The two requests do not depend on each other. What is the better code?"
+    options:
+      - { id: a, text: "Await fetchUser, then await fetchPosts" }
+      - { id: b, text: "Start both and await Promise.all, so they run in parallel" }
+      - { id: c, text: "Use setTimeout to start the second request later" }
+    correct_option: b
+    explanation: "Two awaits in a row run one after the other. `Promise.all` starts both at once, so the total wait is the slower one, not the sum."
+  - id: q3
+    question: "Inside an async function, `await fetch(...)` rejects and there is no try/catch. What happens?"
+    options:
+      - { id: a, text: "The promise returned by the async function rejects, and the caller must handle it" }
+      - { id: b, text: "The error is ignored and the function returns undefined" }
+      - { id: c, text: "The browser reloads the page" }
+    correct_option: a
+    explanation: "async/await is built on promises. An error that is not caught turns into a rejected promise for the caller."
 ---
 
 ## What you'll learn

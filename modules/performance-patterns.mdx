@@ -12,6 +12,40 @@ github_classroom_url: https://classroom.github.com/a/performance-patterns
 paths:
   - slug: senior-principal-engineer
     position: 2
+questions:
+  - id: q1
+    question: "`Chart` is wrapped in `React.memo`, but it still re-renders every time the parent renders. Why?"
+    code:
+      language: tsx
+      source: |
+        const Chart = React.memo(ChartImpl);
+
+        function Parent() {
+          return <Chart config={{ color: 'blue', size: 200 }} />;
+        }
+    options:
+      - { id: a, text: "React.memo only works on class components" }
+      - { id: b, text: "The object literal is a new reference on every render, so the shallow compare fails" }
+      - { id: c, text: "Memo components always re-render when the parent renders" }
+    correct_option: b
+    explanation: "Memo compares props by reference. Give the config a stable reference, for example with useMemo or a module constant."
+  - id: q2
+    question: "Users say a page feels slow. What should you do first?"
+    options:
+      - { id: a, text: "Wrap every component in React.memo" }
+      - { id: b, text: "Lazy-load every component" }
+      - { id: c, text: "Rewrite the page with a faster library" }
+      - { id: d, text: "Measure with React DevTools Profiler and Lighthouse to find the real bottleneck" }
+    correct_option: d
+    explanation: "Without measuring you may optimise the wrong thing and add complexity for no gain."
+  - id: q3
+    question: "Images load late and push the text down the page. Which Core Web Vital suffers, and what fixes it?"
+    options:
+      - { id: a, text: "CLS, set width and height on the images to reserve space" }
+      - { id: b, text: "INP, wrap the images in useMemo" }
+      - { id: c, text: "LCP, remove all CSS from the page" }
+    correct_option: a
+    explanation: "Content that moves after load is layout shift. Reserving space for images keeps the layout stable."
 ---
 
 ## What you'll learn

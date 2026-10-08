@@ -12,6 +12,45 @@ github_classroom_url: https://classroom.github.com/a/state-management
 paths:
   - slug: mid-engineer
     position: 6
+questions:
+  - id: q1
+    question: "The mouse position changes many times per second, and many components read this context. What is the problem?"
+    code:
+      language: tsx
+      source: |
+        const MouseContext = createContext({ x: 0, y: 0 });
+
+        function App() {
+          const [pos, setPos] = useState({ x: 0, y: 0 });
+          // setPos runs on every mousemove
+          return (
+            <MouseContext.Provider value={pos}>
+              <Layout />
+            </MouseContext.Provider>
+          );
+        }
+    options:
+      - { id: a, text: "Context cannot hold objects" }
+      - { id: b, text: "Every consumer re-renders on every move. A store with fine-grained subscriptions fits better" }
+      - { id: c, text: "There is no problem, context is built for frequent updates" }
+    correct_option: b
+    explanation: "Context is for ambient data like theme or auth. For high-frequency updates, use a store that lets components subscribe to only what they need."
+  - id: q2
+    question: "Only a single `Counter` button uses `count`. Where should the state live?"
+    options:
+      - { id: a, text: "In local useState inside Counter" }
+      - { id: b, text: "In a Context at the app root" }
+      - { id: c, text: "In a global Zustand store" }
+    correct_option: a
+    explanation: "Start local. Move right on the spectrum only when you hit a real problem."
+  - id: q3
+    question: "WebSocket messages must update the cart, and many unrelated components show the cart. What fits best?"
+    options:
+      - { id: a, text: "Lift the cart state to the closest common parent" }
+      - { id: b, text: "Pass the cart down as props through every layer" }
+      - { id: c, text: "A global store like Zustand, which can be updated from outside React" }
+    correct_option: c
+    explanation: "State that is updated outside React and read across the app is the case where a global store pays off."
 ---
 
 ## What you'll learn

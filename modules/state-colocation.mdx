@@ -12,6 +12,46 @@ github_classroom_url: https://classroom.github.com/a/state-colocation
 paths:
   - slug: mid-engineer
     position: 4
+questions:
+  - id: q1
+    question: "Typing in the search bar feels slow. Only `SearchBar` uses `searchQuery`. What is the best fix?"
+    code:
+      language: tsx
+      source: |
+        function App() {
+          const [searchQuery, setSearchQuery] = useState('');
+          return (
+            <>
+              <Header />
+              <Sidebar />
+              <SearchBar query={searchQuery} onChange={setSearchQuery} />
+              <Footer />
+            </>
+          );
+        }
+    options:
+      - { id: a, text: "Wrap Header, Sidebar and Footer in React.memo" }
+      - { id: b, text: "Move the searchQuery state into a small component next to SearchBar" }
+      - { id: c, text: "Move searchQuery into a Context so any component can read it" }
+    correct_option: b
+    explanation: "Colocating the state means a keystroke only re-renders the part that uses it. Memo would hide the problem instead of fixing it."
+  - id: q2
+    question: "When should you lift state up to a parent component?"
+    options:
+      - { id: a, text: "Always, so all state lives in one place" }
+      - { id: b, text: "When the component file gets long" }
+      - { id: c, text: "Never, state should always stay local" }
+      - { id: d, text: "When two or more sibling components really need to share it" }
+    correct_option: d
+    explanation: "Start with state as low as it can go. Lift it only when siblings need the same value."
+  - id: q3
+    question: "A `Parent` owns the open or closed state of a `Dropdown`, but only the dropdown reads it. What is the main cost?"
+    options:
+      - { id: a, text: "Each toggle re-renders Parent and its whole subtree, and the state is harder to move or delete" }
+      - { id: b, text: "The dropdown can no longer be styled" }
+      - { id: c, text: "There is no cost, it only changes where the code lives" }
+    correct_option: a
+    explanation: "State that lives too high makes more of the tree re-render and ties the parent to a detail it does not use."
 ---
 
 ## What you'll learn

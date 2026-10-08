@@ -1,0 +1,72 @@
+---
+slug: mcp-tools-vs-manual-bash
+published: false
+title: MCP Tools vs Manual Bash
+description: When to reach for an MCP server integration versus a plain CLI/Bash call — the cost tradeoffs, common use cases, and the current MCP server landscape.
+is_free: true
+order_index: 19
+icon: terminal
+skill_level: intermediate
+---
+
+## What you'll learn
+
+- What an MCP (Model Context Protocol) server actually adds over a CLI call run manually
+- How to decide between "wire up an MCP server" and "just run the CLI on demand"
+- The token-cost tradeoffs behind that decision
+- A working list of MCP use cases and popular existing servers
+
+## MCP tool usage vs. manual Bash
+
+An MCP server registers a fixed set of tools with the assistant. Those tool **schemas** are loaded into context on every turn the server is connected — whether or not you use them that session. A manual CLI call (e.g. `gh`, `psql`, `vercel`) run through a generic shell tool has **no standing cost**: nothing enters context until the command actually runs, and only that command's output does.
+
+|                     | MCP server                                           | Manual CLI via Bash                              |
+| ------------------- | ---------------------------------------------------- | ------------------------------------------------ |
+| Standing token cost | Yes — tool schemas loaded every turn while connected | None — zero cost when idle                       |
+| Output shape        | Structured, but often less trimmable                 | Fully controllable (e.g. `--json field1,field2`) |
+| Reliability         | No shell-quoting/parsing errors                      | Occasional malformed command / retry             |
+| Best for            | Frequent, repeated use across a session              | Occasional or one-off use                        |
+| Setup               | Requires install + auth config                       | Usually already available                        |
+
+**Rule of thumb:** don't install an MCP server "just in case." Each idle connected server is pure token tax with no benefit. Only wire one up if you'll call it often enough in a session that the standing schema cost is paid back by faster/cleaner tool calls — otherwise a manual CLI command is more cost-effective.
+
+Also note: an MCP server never runs on its own. It only exposes tools that get called when explicitly invoked — it does not add automatic/background behavior (e.g. auto-reviewing every new PR). That kind of automation needs a separate mechanism (CI workflow, scheduled/cron agent, git hook).
+
+## MCP use cases for this stack
+
+Relevant to a Next.js + Supabase + Vercel + GitHub + Sentry codebase:
+
+- **GitHub** — issue/PR management, reviews, CI status as structured tool calls instead of parsed shell output
+- **Supabase** — schema inspection, running queries, checking migrations/RLS policies directly against a project without the SQL editor
+- **Sentry** — pulling error events/stack traces directly instead of manual dashboard lookup
+- **Vercel** — deployment status, build logs, env var checks
+- **Context7** — up-to-date library docs (framework/API references), reduces hallucinated API usage
+- **Playwright** — live browser automation: navigate the real app, click through flows, inspect DOM/console/network, take screenshots
+
+> This list will grow as we add MCP servers written in-house for internal tools and company-specific systems — treat the section above as a living list, not a fixed one.
+
+## Popular existing MCP servers
+
+A snapshot of widely used servers in the broader ecosystem (beyond this stack):
+
+- **Filesystem** — read/write local files under a permitted directory
+- **Git / GitHub / GitLab** — repo operations, issues, PRs, reviews
+- **Postgres / SQLite** — direct database querying
+- **Playwright / Puppeteer** — browser automation and scraping
+- **Slack** — reading/posting messages, channel history
+- **Google Drive / Notion / Linear** — document and issue-tracker access
+- **Brave Search / Fetch** — web search and page retrieval
+- **Memory** — persistent knowledge graph across sessions
+- **Stripe** — payments data and operations
+- **AWS / Cloudflare** — cloud infrastructure inspection and management
+- **Figma** — design file inspection (frames, components, tokens)
+
+## Most common MCP tool patterns
+
+Regardless of vendor, most MCP servers cluster into a handful of tool shapes:
+
+- **Read/query** — fetch a record, list items, run a read-only query (lowest risk, most common)
+- **Search** — full-text or semantic search over an external corpus
+- **Write/mutate** — create or update a record (issue, file, row) — usually needs explicit confirmation
+- **Execute** — run an action with side effects (deploy, send message, trigger a job) — highest risk, rarest, should always be gated by user approval
+- **Browse/interact** — drive a UI (browser automation) rather than call an API directly

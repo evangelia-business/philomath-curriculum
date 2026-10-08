@@ -9,6 +9,41 @@ icon: react
 skill_level: advanced
 github_repo_url: https://github.com/junior-to-mid-devs/live-data-fetching-playground
 github_classroom_url: https://classroom.github.com/a/server-and-client-components
+questions:
+  - id: q1
+    question: "What is wrong with this Server Component?"
+    code:
+      language: tsx
+      source: |
+        async function PostPage() {
+          const post = await fetchPost();
+          return (
+            <button onClick={() => likePost(post.id)}>Like</button>
+          );
+        }
+    options:
+      - { id: a, text: "Server Components cannot be async" }
+      - { id: b, text: "fetchPost must be called in a useEffect" }
+      - { id: c, text: "Event handlers do not work in a Server Component. Move the button into a small Client Component" }
+    correct_option: c
+    explanation: "Interactivity needs JavaScript in the browser. Keep the page on the server and make only the button a Client Component."
+  - id: q2
+    question: "A product page fetches data and has one Add to cart button. Where should `'use client'` go?"
+    options:
+      - { id: a, text: "Only in the AddToCartButton component" }
+      - { id: b, text: "At the top of the page file" }
+      - { id: c, text: "In the root layout, so all components can use hooks" }
+    correct_option: a
+    explanation: "Push the client boundary down to the smallest interactive leaf. The rest stays on the server and ships no JavaScript."
+  - id: q3
+    question: "A Server Component tries to read a value from `localStorage`. What happens?"
+    options:
+      - { id: a, text: "It works, Next.js copies localStorage to the server" }
+      - { id: b, text: "It reads an empty value and keeps going" }
+      - { id: c, text: "It is cached until the next deploy" }
+      - { id: d, text: "It fails, because browser APIs do not exist on the server. Read it in a Client Component" }
+    correct_option: d
+    explanation: "Server Components run only on the server, where window, document and localStorage do not exist."
 ---
 
 ## What you'll learn

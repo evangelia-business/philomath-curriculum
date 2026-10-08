@@ -9,6 +9,39 @@ icon: composition
 skill_level: intermediate
 github_repo_url: https://github.com/junior-to-mid-devs/live-data-fetching-playground
 github_classroom_url: https://classroom.github.com/a/controlled-vs-uncontrolled-inputs
+questions:
+  - id: q1
+    question: "You need to show Password too short while the user is typing. Which input model fits?"
+    options:
+      - { id: a, text: "Uncontrolled, read the value on submit" }
+      - { id: b, text: "Controlled, so React has the value on every change" }
+      - { id: c, text: "Either one, they behave the same" }
+    correct_option: b
+    explanation: "Real-time validation needs the value on every keystroke. That is what a controlled input gives you."
+  - id: q2
+    question: "The user types hello into this input. How many times does the component re-render while typing?"
+    code:
+      language: tsx
+      source: |
+        function UncontrolledInput() {
+          const inputRef = useRef<HTMLInputElement>(null);
+          return <input ref={inputRef} defaultValue="" />;
+        }
+    options:
+      - { id: a, text: "0" }
+      - { id: b, text: "1" }
+      - { id: c, text: "5, one for each letter" }
+    correct_option: a
+    explanation: "The DOM owns the value and no state changes. React reads it from the ref only when you ask."
+  - id: q3
+    question: "A long settings form is only read on submit. Profiling shows typing is slow because of re-renders. What is a good change?"
+    options:
+      - { id: a, text: "Add a useEffect that copies each value into state" }
+      - { id: b, text: "Wrap the form in React.memo" }
+      - { id: c, text: "Switch those fields to uncontrolled inputs and read the values on submit" }
+      - { id: d, text: "Debounce every setState call by one second" }
+    correct_option: c
+    explanation: "Start controlled, and switch to uncontrolled when the re-render cost is measured and the value is only needed on submit."
 ---
 
 ## What you'll learn

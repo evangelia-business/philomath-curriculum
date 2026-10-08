@@ -12,6 +12,38 @@ github_classroom_url: https://classroom.github.com/a/browser-internals
 paths:
   - slug: mid-engineer
     position: 1
+questions:
+  - id: q1
+    question: "Why is this loop slow on a long list of elements?"
+    code:
+      language: js
+      source: |
+        for (const el of elements) {
+          el.style.width = el.offsetWidth + 10 + 'px';
+        }
+    options:
+      - { id: a, text: "for...of is slower than forEach" }
+      - { id: b, text: "String concatenation is expensive" }
+      - { id: c, text: "Each step reads layout and then writes a style, so the browser must reflow on every step" }
+    correct_option: c
+    explanation: "Reading `offsetWidth` after a write forces a new layout. Read all widths first, then write all styles."
+  - id: q2
+    question: "You want a card to slide in smoothly. Which property is cheapest to animate?"
+    options:
+      - { id: a, text: "left" }
+      - { id: b, text: "transform" }
+      - { id: c, text: "width" }
+      - { id: d, text: "margin-top" }
+    correct_option: b
+    explanation: "Transform and opacity only need compositing. Left, width and margin change geometry and trigger layout."
+  - id: q3
+    question: "An analytics script does not need the DOM and no other script depends on it. How should you load it?"
+    options:
+      - { id: a, text: "With the async attribute, so it runs when downloaded and does not block parsing" }
+      - { id: b, text: "As a plain script tag in the head" }
+      - { id: c, text: "Inline, at the top of the body" }
+    correct_option: a
+    explanation: "A plain script blocks HTML parsing. `async` suits independent scripts; `defer` suits scripts that need the DOM or a fixed order."
 ---
 
 ## What you'll learn

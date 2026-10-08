@@ -12,6 +12,41 @@ github_classroom_url: https://classroom.github.com/a/system-design-frontend
 paths:
   - slug: senior-principal-engineer
     position: 3
+questions:
+  - id: q1
+    question: "A sales dashboard can show numbers that are up to a minute old. Which caching strategy fits best?"
+    options:
+      - { id: a, text: "Network-first, always wait for fresh data" }
+      - { id: b, text: "Stale-while-revalidate, show cached data and refresh in the background" }
+      - { id: c, text: "Cache-only, never ask the network" }
+    correct_option: b
+    explanation: "When slightly old data is fine, show it at once and refresh behind the scenes. Network-first adds a wait for no gain."
+  - id: q2
+    question: "The server must push notifications to the browser. The browser never sends messages back. Which pattern fits best?"
+    options:
+      - { id: a, text: "WebSockets" }
+      - { id: b, text: "Polling every second" }
+      - { id: c, text: "Server-Sent Events" }
+      - { id: d, text: "Long polling" }
+    correct_option: c
+    explanation: "SSE is a simple one-way stream from server to client. WebSockets are for two-way traffic and add more setup."
+  - id: q3
+    question: "With this config, the user leaves the page and comes back after 2 minutes. What happens?"
+    code:
+      language: ts
+      source: |
+        const { data } = useQuery({
+          queryKey: ['user', userId],
+          queryFn: () => fetchUser(userId),
+          staleTime: 60_000,
+          gcTime: 5 * 60_000,
+        });
+    options:
+      - { id: a, text: "It shows the cached user at once and refetches in the background" }
+      - { id: b, text: "It shows a loading state and fetches the user again" }
+      - { id: c, text: "It shows the cached user and does not refetch" }
+    correct_option: a
+    explanation: "After 2 minutes the data is still in the cache (gcTime 5 min) but it is stale (staleTime 60 s), so it is shown and refreshed."
 ---
 
 ## What you'll learn
